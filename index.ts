@@ -32,7 +32,11 @@ const selectors = {
 (async () => await main())();
 
 async function main() {
-  const browser = await launch({ headless: !config.debug, args: ['--no-sandbox'] });
+  const browser = await launch({
+    headless: !config.debug,
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
+  });
   try {
     const page = await getPageWithLogin(browser);
     await gotoNewsTab(page);
@@ -169,7 +173,7 @@ async function sendSlackWebhook(news: any) {
     username: title,
   };
 
-  await axios.post(process.env.WEBHOOK_URL, payload, {
+  await axios.post(process.env.SLACK_WEBHOOK_URL, payload, {
     headers: { 'content-type': 'application/json' },
   });
 }
