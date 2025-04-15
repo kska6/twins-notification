@@ -9,15 +9,15 @@ import { Browser, launch, Page } from 'puppeteer';
 import { Genre } from './index.d';
 
 dotenv.config();
-const config = yaml.safeLoad(
+const config = yaml.load(
   fs.readFileSync('twins-notification.config.yaml', 'utf-8')
 );
 
 // Puppeteer で使う DOM のセレクタ
 const selectors = {
-  userName: '#LoginFormSlim input[name=userName]',
-  password: '#LoginFormSlim input[name=password]',
-  submit: '#LoginFormSlim button[type="submit"]',
+  userName: 'input[name="userName"]',
+  password: 'input[name="password"]',
+  submit: 'button[type="submit"]',
   loginWait: '#main_information_menu',
   newsTab: '#tab-kj',
   newsTabWait: '#main-frame-div .portlet-title',
@@ -79,18 +79,18 @@ function newsDaysFilter(news: any): boolean {
 async function getPageWithLogin(browser: Browser) {
   const page = await browser.newPage();
   await page.goto(process.env.BASE_URL);
-  await page.waitFor(selectors.password);
-  await page.type(selectors.userName, process.env.ID);
-  await page.type(selectors.password, process.env.PASSWORD);
+  await page.waitForSelector(selectors.password);
+  await page.type(selectors.userName, process.env.TWINS_USER_ID);
+  await page.type(selectors.password, process.env.TWINS_PASSWORD);
   await page.click(selectors.submit);
-  await page.waitFor(selectors.loginWait);
+  await page.waitForSelector(selectors.loginWait);
   return page;
 }
 
 // 「掲示」タブに移動する
 async function gotoNewsTab(page: Page) {
   await page.click(selectors.newsTab);
-  await page.waitFor(selectors.newsTabWait);
+  await page.waitForSelector(selectors.newsTabWait);
 }
 
 // 掲示のジャンル情報を取得する
@@ -124,20 +124,20 @@ async function getNewsList(page: Page, genre: Genre) {
   }
 
   await page.evaluate(linkScript);
-  await page.waitFor(2000);
+  await new Promise((res) => setTimeout(res, 2000));
 
   const frame = (await page.frames()).find(frame => {
     return frame.name() === selectors.newsFrameName;
   });
-  await frame.waitFor(selectors.newsDisplayCount);
+  await frame.waitForSelector(selectors.newsDisplayCount);
   await frame.select(selectors.newsDisplayCount, '200');
   await frame.click(selectors.newsDisplayCountButton);
-  await page.waitFor(2000);
+  await new Promise((res) => setTimeout(res, 2000));
 
   const newFrame = (await page.frames()).find(
     frame => frame.name() === selectors.newsFrameName
   );
-  await newFrame.waitFor(selectors.newsDisplayCountButton);
+  await newFrame.waitForSelector(selectors.newsDisplayCountButton);
 
   const newsHeaders = await newFrame.$$eval(selectors.newsHeaderTh, ths =>
     ths.map(th => th.textContent.trim())
@@ -173,9 +173,14 @@ async function sendSlackWebhook(news: any) {
     username: title,
   };
 
-  await axios.post(process.env.SLACK_WEBHOOK_URL, payload, {
-    headers: { 'content-type': 'application/json' },
-  });
+  console.log(`🔔 Slack通知を送信: ${title} ${news.件名 || ''}`);
+  try {
+    await axios.post(process.env.SLACK_WEBHOOK_URL, payload, {
+      headers: { 'content-type': 'application/json' },
+    });
+  } catch (err) {
+    console.error('❌ Slack通知失敗:', err.response?.data || err.message);
+  }
 }
 
 // Slack 通知で読みやすいように変換する

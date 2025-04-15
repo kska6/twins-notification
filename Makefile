@@ -26,7 +26,13 @@ logs:
 	docker logs -f $(IMAGE_NAME)
 
 test-slack:
-	docker run --rm --env-file .env twins-notification:arm64 yarn ts-node send-test.ts
+	docker run --rm --env-file .env $(IMAGE_NAME):$(IMAGE_TAG) yarn ts-node test-slack.ts
+
+test-login:
+	docker run --rm --env-file .env $(IMAGE_NAME):$(IMAGE_TAG) yarn ts-node test-login.ts
+
+test-notification:
+	docker run --rm --env-file .env twins-notification:arm64 yarn ts-node test-notification.ts
 
 # コンテナ停止
 stop:
