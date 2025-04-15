@@ -1,3 +1,6 @@
+> [!NOTE]
+> このリポジトリは [shuuji3/twins-notification](https://github.com/shuuji3/twins-notification) をフォークして作成されたものです。
+
 # 📡 twins-notification
 
 筑波大学の[Twins](https://twins.tsukuba.ac.jp/)の掲示板のお知らせを通知してくれるプログラムです。Twinsの掲示板を確認するのが大変な人のために作りました。
