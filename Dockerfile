@@ -20,7 +20,9 @@ COPY package.json yarn.lock ./
 # RUN yarn install --frozen-lockfile
 RUN yarn install
 
-COPY send-test.ts ./
+COPY test-slack.ts ./
+COPY test-login.ts ./
+COPY test-notification.ts ./
 
 # アプリケーションコードのコピー
 COPY . .
