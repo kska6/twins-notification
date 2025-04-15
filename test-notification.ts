@@ -33,7 +33,7 @@ const selectors = {
 
 async function main() {
   const browser = await launch({
-    headless: !config.debug,
+    headless: true,
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
   });
