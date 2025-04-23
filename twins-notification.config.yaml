@@ -6,6 +6,9 @@ debug: false
 notify_by:
   - slack
 
+# TwinsのトップページURL（掲示タブ）をSlack通知として送る
+slack_notify_twins_url: true
+
 # 何日前までに掲示されたお知らせを通知するかを指定します。
 #    1 = 昨日と今日掲示されたお知らせを通知
 #    0 = 今日掲示されたお知らせを通知
