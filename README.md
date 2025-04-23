@@ -1,27 +1,25 @@
-> [!NOTE]
-> このリポジトリは [shuuji3/twins-notification](https://github.com/shuuji3/twins-notification) をフォークして作成されたものです。
-
 # 📡 twins-notification
 
-筑波大学の[Twins](https://twins.tsukuba.ac.jp/)の掲示板のお知らせを通知してくれるプログラムです。Twinsの掲示板を確認するのが大変な人のために作りました。
+筑波大学の[Twins](https://twins.tsukuba.ac.jp/)の掲示板のお知らせを通知してくれるプログラムです。
 
-## スクリーンショット
+> [!NOTE]
+> このリポジトリは [shuuji3/twins-notification](https://github.com/shuuji3/twins-notification) をフォークして作成されたものです。  
+> 手元のmacOS用にプログラムを変更しています。  
+> また、一部機能を追加していますが動作を保証するものではありません。
 
-![Slack通知のスクリーンショット](screenshot.png)
+## 環境
 
-💻 Slackへの通知例
+- MacBook Pro 14インチ (2021)
+	- Apple M1 Pro
+	- macOS Sequoia v15.4.1
+- Docker version 28.0.4, build b8034c0
+- GNU Make 3.81
 
 ## 使い方
 
 1. `.env.example`を`.env`にコピーする。
 1. `.env`に必要な情報を入力する。
 1. `twins-notification.config.yaml`を自分好みに設定する。
-
-### Node.jsを使用する場合
-
-1. `yarn install`を実行する(初回のみ)。
-1. `yarn start`を実行する。
-1. Slackに通知が来るはずです。
 
 ### コンテナを使用する場合
 
@@ -30,27 +28,31 @@ make build
 make run
 ```
 
-### KubernetesクラスタにCronJobとしてデプロイする場合
+### スケジュール実行する場合
+
+cronを使用して、定期的に実行することができます。
+
+ターミナルで以下のコマンドを実行して、cronの設定を開きます。
 
 ```shell
-make build
-make push
-make deploy
+crontab -e
 ```
 
-## 現在の制限事項
+毎日9時に実行する場合、以下のようにcronを設定します。  
+dockerが実行できるように、PATHを指定する必要があります。
 
-- WebhookのpayloadがSlackに適した形式にしか対応していません。
-  - Slackの通知で満足してしまいそうなので、他の通知方法に対応するかどうかは未定です。RSSで出力したり、メールで1週間のお知らせを通知できたら嬉しいかも？
-- 通知範囲の指定方法が、「現在から指定日数前」以外に存在しません。
-- お知らせ一覧に書かれた情報しか通知してくれません。
-  - Twinsには各お知らせに対するPermalinkが存在しないため、お知らせの詳細がわかりません。([issue #1](https://github.com/shuuji3/twins-notification/issues/1))
-- エラーハンドリングをちゃんとしていません。
+```shell
+PATH=/usr/local/bin:/usr/bin:/bin
+0 9 * * * cd /path/to/twins-notification && make run
+```
+
+スケジュールの時間にmacbookをスリープさせていると、通知が届かない場合があります。  
+その場合は、スリープを解除するためにpmsetでスリープ解除のスケジュールを設定することができます。
+
+```shell
+sudo pmset repeat wake MTWRFSU 08:59:00
+```
 
 ## ライセンス
 
 [GNU General Public License v3.0](./LICENSE)
-
-## 関連リポジトリ
-
-- [shuuji3/userscript-twins-insert-article-url-button: 📋 筑波大学のtwinsに「個別のお知らせページを開くボタン」と「他人と共有できるURLをコピーするボタン」を追加するスクリプト](https://github.com/shuuji3/userscript-twins-insert-article-url-button)
