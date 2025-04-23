@@ -1,27 +1,27 @@
-> [!NOTE]
-> このリポジトリは [shuuji3/twins-notification](https://github.com/shuuji3/twins-notification) をフォークして作成されたものです。
-
 # 📡 twins-notification
 
-筑波大学の[Twins](https://twins.tsukuba.ac.jp/)の掲示板のお知らせを通知してくれるプログラムです。Twinsの掲示板を確認するのが大変な人のために作りました。
+筑波大学の[Twins](https://twins.tsukuba.ac.jp/)の掲示板のお知らせを通知してくれるプログラムです。
 
-## スクリーンショット
+> [!NOTE]
+> このリポジトリは [shuuji3/twins-notification](https://github.com/shuuji3/twins-notification) をフォークして作成されたものです。  
+> macOS での動作用に修正されています。
 
-![Slack通知のスクリーンショット](screenshot.png)
+## 環境
 
-💻 Slackへの通知例
+- MacBook Pro 14インチ (2021)
+	- Apple M1 Pro
+	- macOS Sequoia v15.4.1
+- Docker version 28.0.4, build b8034c0
+- GNU Make 3.81
 
 ## 使い方
 
-1. `.env.example`を`.env`にコピーする。
-1. `.env`に必要な情報を入力する。
-1. `twins-notification.config.yaml`を自分好みに設定する。
-
-### Node.jsを使用する場合
-
-1. `yarn install`を実行する(初回のみ)。
-1. `yarn start`を実行する。
-1. Slackに通知が来るはずです。
+1. `.env.example` を `.env` にコピーする。
+2. `.env` に必要な情報を入力する。
+	- TWINS_USER_ID：統一認証ID
+	- TWINS_PASSWORD：統一認証パスワード
+	- WEBHOOK_URL：Slack の Incoming Webhook URL
+3. `twins-notification.config.yaml` を自分好みに設定する。
 
 ### コンテナを使用する場合
 
@@ -30,27 +30,33 @@ make build
 make run
 ```
 
-### KubernetesクラスタにCronJobとしてデプロイする場合
+### 定期実行の設定
+
+cron を利用して、定期的にこのプログラムを実行できます。
+
+ターミナルで以下のコマンドを実行して、cron の設定を開きます。
 
 ```shell
-make build
-make push
-make deploy
+crontab -e
 ```
 
-## 現在の制限事項
+毎日9時に実行する場合、以下のように cron を設定します。  
+cron 環境では PATH が制限されるため、Docker コマンドが動作するように PATH を明示的に指定します。
 
-- WebhookのpayloadがSlackに適した形式にしか対応していません。
-  - Slackの通知で満足してしまいそうなので、他の通知方法に対応するかどうかは未定です。RSSで出力したり、メールで1週間のお知らせを通知できたら嬉しいかも？
-- 通知範囲の指定方法が、「現在から指定日数前」以外に存在しません。
-- お知らせ一覧に書かれた情報しか通知してくれません。
-  - Twinsには各お知らせに対するPermalinkが存在しないため、お知らせの詳細がわかりません。([issue #1](https://github.com/shuuji3/twins-notification/issues/1))
-- エラーハンドリングをちゃんとしていません。
+```shell
+PATH=/usr/local/bin:/usr/bin:/bin
+0 9 * * * cd /path/to/twins-notification && make run
+```
+
+スケジュール実行時に MacBook がスリープ状態だと通知が行われない場合があります。  
+その場合は、`pmset` コマンドでスリープ解除をスケジュールできます。
+
+```shell
+sudo pmset repeat wake MTWRFSU 08:59:00
+```
+
+（参考：[pmset manページ](https://ss64.com/mac/pmset.html)）
 
 ## ライセンス
 
 [GNU General Public License v3.0](./LICENSE)
-
-## 関連リポジトリ
-
-- [shuuji3/userscript-twins-insert-article-url-button: 📋 筑波大学のtwinsに「個別のお知らせページを開くボタン」と「他人と共有できるURLをコピーするボタン」を追加するスクリプト](https://github.com/shuuji3/userscript-twins-insert-article-url-button)
