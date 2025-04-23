@@ -58,6 +58,22 @@ async function main() {
       await browser.close();
     }
   }
+  if (config.notify_by.includes('slack') && config.slack_notify_twins_url) {
+    const twinsUrl = `${process.env.BASE_URL}/campusweb/campusportal.do?page=main&tabId=kj`;
+    const twinsUrlPayload = {
+      icon_emoji: config.genre_emoji_map.default,
+      text: twinsUrl,
+      username: 'Twins URL',
+    };
+    console.log(`🔔 Slack通知を送信: Twins URL ${twinsUrl}`);
+    try {
+      await axios.post(process.env.SLACK_WEBHOOK_URL, twinsUrlPayload, {
+        headers: { 'content-type': 'application/json' },
+      });
+    } catch (err) {
+      console.error('❌ Slack通知失敗:', err.response?.data || err.message);
+    }
+  }
 }
 
 // ニュースの掲載日によるフィルタ
