@@ -4,8 +4,7 @@
 
 > [!NOTE]
 > このリポジトリは [shuuji3/twins-notification](https://github.com/shuuji3/twins-notification) をフォークして作成されたものです。  
-> 手元のmacOS用にプログラムを変更しています。  
-> また、一部機能を追加していますが動作を保証するものではありません。
+> macOS での動作用に修正されています。
 
 ## 環境
 
@@ -17,9 +16,12 @@
 
 ## 使い方
 
-1. `.env.example`を`.env`にコピーする。
-1. `.env`に必要な情報を入力する。
-1. `twins-notification.config.yaml`を自分好みに設定する。
+1. `.env.example` を `.env` にコピーする。
+2. `.env` に必要な情報を入力する。
+	- TWINS_USER_ID：統一認証ID
+	- TWINS_PASSWORD：統一認証パスワード
+	- WEBHOOK_URL：Slack の Incoming Webhook URL
+3. `twins-notification.config.yaml` を自分好みに設定する。
 
 ### コンテナを使用する場合
 
@@ -28,7 +30,7 @@ make build
 make run
 ```
 
-### スケジュール実行（定期実行）の設定
+### 定期実行の設定
 
 cron を利用して、定期的にこのプログラムを実行できます。
 
@@ -52,6 +54,8 @@ PATH=/usr/local/bin:/usr/bin:/bin
 ```shell
 sudo pmset repeat wake MTWRFSU 08:59:00
 ```
+
+（参考：[pmset manページ](https://ss64.com/mac/pmset.html)）
 
 ## ライセンス
 
