@@ -1,5 +1,3 @@
-# Dockerビルドと実行を簡略化するMakefile例
-
 # イメージ名とタグ
 IMAGE_NAME = twins-notification
 IMAGE_TAG = arm64
