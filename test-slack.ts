@@ -1,4 +1,5 @@
 // send-test.ts
+import 'dotenv/config';
 import axios from 'axios';
 
 (async () => {
